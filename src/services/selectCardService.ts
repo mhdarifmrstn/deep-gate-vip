@@ -3,38 +3,55 @@ import bot from "../botAccount.js";
 import globalState from "./globalState.js";
 
 class SelectCard {
-  cards: number[];
-  totalClient: number;
+  task: {
+    [chatId: string]: {
+      cards: number[];
+      totalClient: number;
+    };
+  };
   bot: TelegramClient;
 
-  constructor(totalClient: number) {
-    this.cards = [];
-    this.totalClient = totalClient;
+  constructor() {
+    this.task = {};
     this.bot = bot;
   }
 
-  async add(card: number) {
-    this.cards.push(card);
+  initialize() {
+    const chats = Object.values(globalState.registeredChats);
 
-    if (this.cards.length >= this.totalClient) {
-      this.orderCards();
-      await this.sendMessage();
-      this.clear();
-    }
-  }
-
-  orderCards() {
-    this.cards.sort((cardX, cardY) => cardX - cardY);
-  }
-
-  async sendMessage() {
-    await this.bot.sendMessage(globalState.currentGroupId, {
-      message: `Kartu yang dipilih: ${this.cards.join(", ")}`,
+    chats.map((chat) => {
+      if (chat) {
+        this.task[chat.id] = {
+          cards: [],
+          totalClient: chat.playerIds.length,
+        };
+      }
     });
   }
 
-  clear() {
-    this.cards = [];
+  async add(chatId: string, card: number) {
+    const chatTask = this.task[chatId];
+    chatTask.cards.push(card);
+
+    if (chatTask.cards.length >= chatTask.totalClient) {
+      this.orderCards(chatId);
+      await this.sendMessage(chatId);
+      this.clearCards(chatId);
+    }
+  }
+
+  orderCards(chatId: string) {
+    this.task[chatId].cards.sort((cardX, cardY) => cardX - cardY);
+  }
+
+  async sendMessage(chatId: string) {
+    await this.bot.sendMessage(chatId, {
+      message: `Kartu yang dipilih: ${this.task[chatId].cards.join(", ")}`,
+    });
+  }
+
+  clearCards(chatId: string) {
+    this.task[chatId].cards = [];
   }
 }
 

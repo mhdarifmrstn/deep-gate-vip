@@ -1,3 +1,4 @@
+import { Api } from "telegram";
 import { NewMessageEvent } from "telegram/events/index.js";
 import sleep from "../../extra/sleep.js";
 import globalState from "../../services/globalState.js";
@@ -6,19 +7,34 @@ import getAllButtonsText from "../../extra/getAllButtonsText.js";
 
 async function selectCardHandler(event: NewMessageEvent) {
   const client = event.client;
+  const message = event.message;
+
   if (!client) return;
 
-  const message = event.message;
+  const me = (await client.getMe()) as Api.User;
   const replyMarkup = message.replyMarkup;
+  const registeredChats = globalState.registeredChats;
+  const registeredChatsKeys = Object.keys(registeredChats);
 
   if (replyMarkup && replyMarkup.className === "ReplyInlineMarkup") {
-    const cards = getAllButtonsText(replyMarkup);
-    const selectedCard = getRandom(cards);
+    registeredChatsKeys.forEach(async (key) => {
+      const chat = registeredChats[key];
 
-    await sleep(globalState.selectCardDelay);
-    await message.click({ text: selectedCard });
+      if (!chat) return;
 
-    globalState.selectedCards.add(Number(selectedCard.split(" ")[0]));
+      const chatId = chat.id;
+
+      if (chat.playerIds.includes(me.id.toString())) {
+        const cards = getAllButtonsText(replyMarkup);
+        const selectedCardText = getRandom(cards);
+        const selectedcard = Number(selectedCardText.split(" ")[0]);
+
+        await sleep(globalState.selectCardDelay);
+        await message.click({ text: selectedCardText });
+
+        globalState.selectedCards.add(chatId.toString(), selectedcard);
+      }
+    });
   }
 }
 

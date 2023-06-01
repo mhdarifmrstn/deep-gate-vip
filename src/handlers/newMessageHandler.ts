@@ -10,11 +10,11 @@ async function newMessageHandler(event: NewMessageEvent) {
   const astarothId = globalState.astarothId;
 
   if (message.isPrivate && peerId.className === "PeerUser") {
-    if (peerId.userId.equals(bigInt(globalState.astarothId))) {
+    if (peerId.userId.toString() === astarothId) {
       astaroth.privateChatHandler(event);
     }
   } else if (fromId && fromId.className === "PeerUser") {
-    if (fromId.userId.equals(bigInt(astarothId))) {
+    if (fromId.userId.toString() === astarothId) {
       astaroth.groupChatHandler(event);
     }
   }

@@ -25,7 +25,7 @@ async function callbackQueryHandler(event: CallbackQueryEvent) {
         message: messageId,
         text: `${sender.firstName} memilih row ${rowNumber}`,
       });
-      await globalState.keepCard.keepRow(data);
+      await globalState.keepCard.keepRow(chatId.toString(), data);
     }
   }
 }

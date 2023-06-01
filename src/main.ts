@@ -10,6 +10,7 @@ import newMessageHandler from "./handlers/newMessageHandler.js";
 import bot from "./botAccount.js";
 import { CallbackQuery } from "telegram/events/CallbackQuery.js";
 import callbackQueryHandler from "./handlers/callbackQueryHandler.js";
+import globalState from "./services/globalState.js";
 
 const env = process.env;
 
@@ -47,6 +48,9 @@ for (let i = 0; i < 2; i++) {
       phoneCode: async () => await input.text("Please enter the code you received: "),
       onError: (err) => console.log(err),
     });
+    globalState.selectedCards.initialize();
+    globalState.keepCard.initialize();
+
     console.log("You should now be connected.");
   })();
 }
