@@ -3,7 +3,7 @@ import "dotenv/config";
 // @ts-ignore
 import input from "input";
 
-import { Api, TelegramClient } from "telegram";
+import { TelegramClient } from "telegram";
 import { StringSession } from "telegram/sessions/index.js";
 import { NewMessage } from "telegram/events/index.js";
 import newMessageHandler from "./handlers/newMessageHandler.js";
@@ -11,15 +11,11 @@ import bot from "./botAccount.js";
 import { CallbackQuery } from "telegram/events/CallbackQuery.js";
 import callbackQueryHandler from "./handlers/callbackQueryHandler.js";
 import globalState from "./services/globalState.js";
+import editedMessageHandler from "./handlers/editedMessageHandler.js";
+import { EditedMessage } from "telegram/events/EditedMessage.js";
 
 const env = process.env;
 
-// if (!env.API_ID) {
-//   throw Error("Provide API_ID");
-// }
-// if (!env.API_HASH) {
-//   throw Error("Provide API_HASH");
-// }
 if (!env.BOT_TOKEN) {
   throw Error("Provide BOT_TOKEN");
 }
@@ -37,6 +33,7 @@ for (let i = 0; i < 2; i++) {
   const client = new TelegramClient(stringSession, apiId, apiHash, {
     connectionRetries: 5,
   });
+  client.addEventHandler(editedMessageHandler, new EditedMessage({}));
   client.addEventHandler(newMessageHandler, new NewMessage({}));
 
   (async () => {

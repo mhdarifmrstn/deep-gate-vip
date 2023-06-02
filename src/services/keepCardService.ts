@@ -8,6 +8,7 @@ class KeepCard {
     [chatId: string]: {
       rows: number[];
       message?: Api.Message;
+      waitingMessageId: number;
     };
   };
   bot: TelegramClient;
@@ -24,6 +25,7 @@ class KeepCard {
       if (chat) {
         this.task[chat.id] = {
           rows: [],
+          waitingMessageId: NaN,
         };
       }
     });
@@ -32,7 +34,7 @@ class KeepCard {
   async add(chatId: string, message: Api.Message, rows: string[]) {
     this.task[chatId].message = message;
 
-    await bot.sendMessage(chatId, {
+    const waitingMessage = await bot.sendMessage(chatId, {
       message: "Pilih row mana cuy",
       buttons: bot.buildReplyMarkup(
         rows.map((row) => {
@@ -40,6 +42,7 @@ class KeepCard {
         })
       ),
     });
+    this.task[chatId].waitingMessageId = waitingMessage.id;
   }
 
   async keepRow(chatId: string, text: string) {

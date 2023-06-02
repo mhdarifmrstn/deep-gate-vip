@@ -46,7 +46,7 @@ class SelectCard {
 
   async sendMessage(chatId: string) {
     await this.bot.sendMessage(chatId, {
-      message: `Kartu yang dipilih: ${this.task[chatId].cards.join(", ")}`,
+      message: `Kartu yang dipilih: ${this.task[chatId].cards.join(" ")}`,
     });
   }
 
