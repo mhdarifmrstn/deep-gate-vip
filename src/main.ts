@@ -24,7 +24,7 @@ const botToken = env.BOT_TOKEN;
 
 bot.addEventHandler(callbackQueryHandler, new CallbackQuery({}));
 
-for (let i = 0; i < 2; i++) {
+for (let i = 0; i < 4; i++) {
   const userIndex = i + 1;
   const apiId = Number(env[`USER_${userIndex}_API_ID`]);
   const apiHash = env[`USER_${userIndex}_API_HASH`]!;
