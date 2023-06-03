@@ -18,6 +18,7 @@ interface GlobalState {
   keepCard: KeepCard;
   totalClient: number;
   registeredChats: RegisteredChats;
+  debug: boolean;
 }
 class GlobalState {
   constructor() {
@@ -38,6 +39,7 @@ class GlobalState {
         playerIds: ["6212345891", "5634983921"],
       },
     };
+    this.debug = Boolean(process.env.DEEP_GATE_VIP_DEBUG);
   }
 }
 const globalState = new GlobalState();

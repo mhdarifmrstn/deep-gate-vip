@@ -4,6 +4,7 @@ import sleep from "../../extra/sleep.js";
 import globalState from "../../services/globalState.js";
 import getRandom from "../../extra/getRandom.js";
 import getAllButtonsText from "../../extra/getAllButtonsText.js";
+import debug from "../../services/debug.js";
 
 async function selectCardHandler(event: NewMessageEvent) {
   const client = event.client;
@@ -12,28 +13,33 @@ async function selectCardHandler(event: NewMessageEvent) {
   if (!client) return;
 
   const me = (await client.getMe()) as Api.User;
+  const playerId = me.id;
+  const playerName = me.firstName;
   const replyMarkup = message.replyMarkup;
   const registeredChats = globalState.registeredChats;
   const registeredChatsKeys = Object.keys(registeredChats);
 
   if (replyMarkup && replyMarkup.className === "ReplyInlineMarkup") {
     registeredChatsKeys.forEach(async (key) => {
-      const chat = registeredChats[key];
+      const registeredChat = registeredChats[key];
 
-      if (!chat) return;
+      if (!registeredChat) return;
 
-      const chatId = chat.id;
+      try {
+        const chat = (await client.getEntity(registeredChat.id)) as Api.Channel;
 
-      if (chat.playerIds.includes(me.id.toString())) {
-        const cards = getAllButtonsText(replyMarkup);
-        const selectedCardText = getRandom(cards);
-        const selectedcard = Number(selectedCardText.split(" ")[0]);
+        if (registeredChat.playerIds.includes(playerId.toString())) {
+          const cards = getAllButtonsText(replyMarkup);
+          const selectedCardText = getRandom(cards);
+          const selectedcard = Number(selectedCardText.split(" ")[0]);
 
-        await sleep(globalState.selectCardDelay);
-        await message.click({ text: selectedCardText });
+          await sleep(globalState.selectCardDelay);
+          await message.click({ text: selectedCardText });
+          debug(`player ${playerName} from ${chat.title} choose ${selectedcard}`);
 
-        globalState.selectedCards.add(chatId.toString(), selectedcard);
-      }
+          globalState.selectedCards.add(chat.id.toString(), selectedcard);
+        }
+      } catch {}
     });
   }
 }

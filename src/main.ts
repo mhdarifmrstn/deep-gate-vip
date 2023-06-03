@@ -24,19 +24,22 @@ const botToken = env.BOT_TOKEN;
 
 bot.addEventHandler(callbackQueryHandler, new CallbackQuery({}));
 
-for (let i = 0; i < 4; i++) {
-  const userIndex = i + 1;
-  const apiId = Number(env[`USER_${userIndex}_API_ID`]);
-  const apiHash = env[`USER_${userIndex}_API_HASH`]!;
-  const stringSession = new StringSession(env[`USER_${userIndex}_STRING_SESSION`]);
+(async () => {
+  globalState.selectedCards.initialize();
+  globalState.keepCard.initialize();
 
-  const client = new TelegramClient(stringSession, apiId, apiHash, {
-    connectionRetries: 5,
-  });
-  client.addEventHandler(editedMessageHandler, new EditedMessage({}));
-  client.addEventHandler(newMessageHandler, new NewMessage({}));
+  for (let i = 0; i < 4; i++) {
+    const userIndex = i + 1;
+    const apiId = Number(env[`USER_${userIndex}_API_ID`]);
+    const apiHash = env[`USER_${userIndex}_API_HASH`]!;
+    const stringSession = new StringSession(env[`USER_${userIndex}_STRING_SESSION`]);
 
-  (async () => {
+    const client = new TelegramClient(stringSession, apiId, apiHash, {
+      connectionRetries: 5,
+    });
+    client.addEventHandler(editedMessageHandler, new EditedMessage({}));
+    client.addEventHandler(newMessageHandler, new NewMessage({}));
+
     console.log("Loading interactive example...");
 
     await client.start({
@@ -45,13 +48,9 @@ for (let i = 0; i < 4; i++) {
       phoneCode: async () => await input.text("Please enter the code you received: "),
       onError: (err) => console.log(err),
     });
-    globalState.selectedCards.initialize();
-    globalState.keepCard.initialize();
 
     console.log("You should now be connected.");
-  })();
-}
-(async () => {
+  }
   await bot.start({
     botAuthToken: botToken,
   });
