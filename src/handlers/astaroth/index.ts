@@ -1,5 +1,6 @@
 import groupChatHandler from "./groupChatHandler.js";
 import keepCardHandler from "./keepCardHandler.js";
+import newRoundHandler from "./newRoundHandler.js";
 import privateChatEditHandler from "./privateChatEditHandler.js";
 import privateChatHandler from "./privateChatHandler.js";
 import selectCardHandler from "./selectCardHandler.js";
@@ -12,4 +13,5 @@ export default {
   selectCardHandler,
   startGameHandler,
   keepCardHandler,
+  newRoundHandler,
 };
