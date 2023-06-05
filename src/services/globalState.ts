@@ -30,12 +30,12 @@ class GlobalState {
     this.selectedCards = new SelectCard();
     this.keepCard = new KeepCard();
     this.registeredChats = {
-      "1872426916": {
-        id: "1872426916",
+      "1913908945": {
+        id: "1913908945",
         playerIds: ["6073366007", "5946461971"],
       },
-      "1859501411": {
-        id: "1859501411",
+      "1828992416": {
+        id: "1828992416",
         playerIds: ["6212345891", "5634983921"],
       },
     };
