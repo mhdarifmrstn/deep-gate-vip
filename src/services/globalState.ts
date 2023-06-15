@@ -38,6 +38,10 @@ class GlobalState {
         id: "1828992416",
         playerIds: ["6212345891", "5634983921"],
       },
+      "1880818151": {
+        id: "1880818151",
+        playerIds: ["5940611222", "6200057207"],
+      },
     };
     this.debug = Boolean(process.env.DEEP_GATE_VIP_DEBUG);
   }

@@ -28,7 +28,7 @@ bot.addEventHandler(callbackQueryHandler, new CallbackQuery({}));
   globalState.selectedCards.initialize();
   globalState.keepCard.initialize();
 
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < 6; i++) {
     const userIndex = i + 1;
     const apiId = Number(env[`USER_${userIndex}_API_ID`]);
     const apiHash = env[`USER_${userIndex}_API_HASH`]!;
