@@ -4,10 +4,10 @@ import "dotenv/config";
 
 const env = process.env;
 const stringSession = env.BOT_STRING_SESSION;
-const BOT_API_ID = Number(env.BOT_API_ID!);
-const BOT_API_HASH = env.BOT_API_HASH!;
+const API_ID = Number(env.API_ID!);
+const API_HASH = env.API_HASH!;
 
-const bot = new TelegramClient(new StringSession(stringSession), BOT_API_ID, BOT_API_HASH, {
+const bot = new TelegramClient(new StringSession(stringSession), API_ID, API_HASH, {
   connectionRetries: 5,
 });
 

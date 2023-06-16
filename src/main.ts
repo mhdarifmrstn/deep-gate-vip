@@ -44,8 +44,8 @@ bot.addEventHandler(callbackQueryHandler, new CallbackQuery({}));
 
   for (let i = 0; i < totalClients; i++) {
     const userIndex = i + 1;
-    const apiId = Number(env[`USER_${userIndex}_API_ID`]);
-    const apiHash = env[`USER_${userIndex}_API_HASH`]!;
+    const apiId = Number(env.API_ID);
+    const apiHash = env.API_HASH!;
     const stringSession = new StringSession(env[`USER_${userIndex}_STRING_SESSION`]);
 
     const client = new TelegramClient(stringSession, apiId, apiHash, {
