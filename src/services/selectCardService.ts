@@ -17,15 +17,17 @@ class SelectCard {
   }
 
   initialize() {
-    const chats = Object.values(globalState.registeredChats);
+    const registeredChats = globalState.registeredChats;
+    const chatIds = Object.keys(registeredChats);
 
-    chats.map((chat) => {
-      if (chat) {
-        this.task[chat.id] = {
-          cards: [],
-          totalClient: chat.playerIds.length,
-        };
-      }
+    chatIds.map((chatId) => {
+      const players = registeredChats[chatId]?.players || {};
+      const totalClient = Object.keys(players).length;
+
+      this.task[chatId] = {
+        cards: [],
+        totalClient,
+      };
     });
   }
 

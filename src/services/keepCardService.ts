@@ -19,15 +19,13 @@ class KeepCard {
   }
 
   initialize() {
-    const chats = Object.values(globalState.registeredChats);
+    const chatIds = Object.keys(globalState.registeredChats);
 
-    chats.map((chat) => {
-      if (chat) {
-        this.task[chat.id] = {
-          rows: [],
-          waitingMessageId: NaN,
-        };
-      }
+    chatIds.map((chatId) => {
+      this.task[chatId] = {
+        rows: [],
+        waitingMessageId: NaN,
+      };
     });
   }
 
