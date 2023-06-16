@@ -1,5 +1,6 @@
 import SelectCard from "./selectCardService.js";
 import KeepCard from "./keepCardService.js";
+import axios from "axios";
 
 interface RegisteredChats {
   [id: string]:
@@ -29,21 +30,17 @@ class GlobalState {
     this.totalClient = 2;
     this.selectedCards = new SelectCard();
     this.keepCard = new KeepCard();
-    this.registeredChats = {
-      "1684256389": {
-        id: "1684256389",
-        playerIds: ["6267363552", "5946461971"],
-      },
-      "1828992416": {
-        id: "1828992416",
-        playerIds: ["6212345891", "5634983921"],
-      },
-      "1880818151": {
-        id: "1880818151",
-        playerIds: ["5940611222", "6200057207"],
-      },
-    };
+    this.registeredChats = {};
     this.debug = Boolean(process.env.DEEP_GATE_VIP_DEBUG);
+  }
+
+  async getRegisteredChats() {
+    const REGISTERED_CHATS_CONFIG_URL = process.env.REGISTERED_CHATS_CONFIG_URL;
+
+    if (!REGISTERED_CHATS_CONFIG_URL) {
+      throw Error("Provide REGISTERED_CHATS_CONFIG_URL");
+    }
+    this.registeredChats = (await axios.get<RegisteredChats>(REGISTERED_CHATS_CONFIG_URL)).data;
   }
 }
 const globalState = new GlobalState();
