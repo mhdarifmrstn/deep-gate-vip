@@ -1,5 +1,4 @@
 import { NewMessageEvent } from "telegram/events/index.js";
-import bigInt from "big-integer";
 import globalState from "../services/globalState.js";
 import astaroth from "./astaroth/index.js";
 

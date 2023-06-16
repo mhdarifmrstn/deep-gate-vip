@@ -1,4 +1,3 @@
-import { Api } from "telegram";
 import { NewMessageEvent } from "telegram/events/index.js";
 import sleep from "../../extra/sleep.js";
 import globalState from "../../services/globalState.js";

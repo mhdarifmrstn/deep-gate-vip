@@ -2,19 +2,17 @@ import SelectCard from "./selectCardService.js";
 import KeepCard from "./keepCardService.js";
 import axios from "axios";
 
+interface Player {
+  name: string;
+}
+interface Chat {
+  name: string;
+  players: {
+    [id: string]: Player | undefined;
+  };
+}
 interface RegisteredChats {
-  [id: string]:
-    | {
-        name: string;
-        players: {
-          [id: string]:
-            | {
-                name: string;
-              }
-            | undefined;
-        };
-      }
-    | undefined;
+  [id: string]: Chat | undefined;
 }
 interface GlobalState {
   startTime: number;

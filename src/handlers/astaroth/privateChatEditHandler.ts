@@ -1,6 +1,5 @@
 import { NewMessageEvent } from "telegram/events/index.js";
 import globalState from "../../services/globalState.js";
-import { Api } from "telegram";
 import debug from "../../services/debug.js";
 
 async function privateChatEditHandler(event: NewMessageEvent) {
