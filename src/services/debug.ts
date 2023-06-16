@@ -4,7 +4,7 @@ const beAbleToDebug = globalState.debug;
 
 function debug(text: string) {
   if (beAbleToDebug) {
-    console.log(text);
+    console.log(new Date(), text);
   }
 }
 
