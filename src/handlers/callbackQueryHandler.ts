@@ -1,4 +1,3 @@
-import { Api } from "telegram";
 import { CallbackQueryEvent } from "telegram/events/CallbackQuery.js";
 import globalState from "../services/globalState.js";
 import debug from "../services/debug.js";
@@ -16,16 +15,15 @@ async function callbackQueryHandler(event: CallbackQueryEvent) {
     query.peer.className === "PeerChannel" &&
     sender.className === "User"
   ) {
-    const chatId = query.peer.channelId;
-    const chat = (await client.getEntity(chatId)) as Api.Channel;
+    const chatId = event.chatId?.toString() || "";
+    const registeredChat = globalState.registeredChats[chatId];
     const messageId = query.msgId;
     const data = query.data?.toString();
     const senderName = sender.firstName;
 
-    if (data) {
+    if (registeredChat && data) {
       const rowNumber = data.split(" ")[0];
-
-      debug(`${senderName} from ${chat.title} memilih row ${rowNumber}`);
+      debug(`${senderName} from ${registeredChat.name} memilih row ${rowNumber}`);
 
       await client.editMessage(chatId, {
         message: messageId,

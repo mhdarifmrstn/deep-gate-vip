@@ -13,21 +13,21 @@ async function privateChatEditHandler(event: NewMessageEvent) {
 
   const registeredChats = globalState.registeredChats;
   const registeredChatIds = Object.keys(registeredChats);
-  const me = (await client.getMe()) as Api.User;
-  const playerId = me.id.toString();
-  const playerName = me.firstName;
+  const me = client._selfInputPeer;
+  const playerId = me?.userId.toString() || "";
 
   registeredChatIds.forEach(async (chatId) => {
     const registeredChat = registeredChats[chatId];
+    const player = registeredChat?.players[playerId];
 
-    if (registeredChat?.players[playerId]) {
+    if (player) {
       if (messageText.includes(timeoutKeepIdMessage) || messageText.includes(timeoutKeepEnMessage)) {
         const selectedRow = messageText.match(/\d/);
         const newText = `row ${selectedRow} telah dipilih oleh astaroth`;
         const waitingMessageId = globalState.keepCard.task[chatId.toString()].waitingMessageId;
         const bot = globalState.keepCard.bot;
 
-        debug(`astaroth choose ${playerName} row ${selectedRow} because it has passed the time limit`);
+        debug(`astaroth choose ${player.name} row ${selectedRow} because it has passed the time limit`);
         await bot.editMessage(chatId, { message: waitingMessageId, text: newText });
       }
     }

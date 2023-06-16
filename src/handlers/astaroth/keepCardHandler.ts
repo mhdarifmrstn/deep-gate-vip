@@ -12,27 +12,19 @@ async function keepCardHandler(event: NewMessageEvent) {
   if (!client) return;
 
   const registeredChats = globalState.registeredChats;
-  const registeredChatsKeys = Object.keys(registeredChats);
-
-  const me = (await client.getMe()) as Api.User;
-  const playerId = me.id;
-  const playerName = me.firstName;
+  const registeredChatIds = Object.keys(registeredChats);
+  const playerId = client._selfInputPeer?.userId.toString() || "";
 
   if (replyMarkup && replyMarkup.className === "ReplyInlineMarkup") {
-    registeredChatsKeys.forEach(async (key) => {
-      const registeredChat = registeredChats[key];
-
-      if (!registeredChat) return;
+    registeredChatIds.forEach(async (chatId) => {
+      const registeredChat = registeredChats[chatId];
+      const player = registeredChat?.players[playerId];
 
       try {
-        const chat = (await client.getEntity(registeredChat.id)) as Api.Channel;
-
-        if (registeredChat.playerIds.includes(playerId.toString())) {
+        if (player) {
           const rows = getAllButtonsText(replyMarkup);
-
-          debug(`astaroth wants ${playerName} from ${chat.title} to keep their card on a row`);
-
-          await globalState.keepCard.add(chat.id.toString(), message, rows);
+          debug(`astaroth wants ${player.name} from ${registeredChat.name} to keep their card on a row`);
+          await globalState.keepCard.add(chatId, message, rows);
         }
       } catch {}
     });
