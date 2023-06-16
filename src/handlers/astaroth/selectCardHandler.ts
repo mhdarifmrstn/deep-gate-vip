@@ -9,26 +9,23 @@ import debug from "../../services/debug.js";
 async function selectCardHandler(event: NewMessageEvent) {
   const client = event.client;
   const message = event.message;
-
   if (!client) return;
-
   const me = (await client.getMe()) as Api.User;
-  const playerId = me.id;
+  const playerId = me.id.toString();
   const playerName = me.firstName;
   const replyMarkup = message.replyMarkup;
   const registeredChats = globalState.registeredChats;
-  const registeredChatsKeys = Object.keys(registeredChats);
+  const registeredChatIds = Object.keys(registeredChats);
 
   if (replyMarkup && replyMarkup.className === "ReplyInlineMarkup") {
-    registeredChatsKeys.forEach(async (key) => {
-      const registeredChat = registeredChats[key];
-
+    registeredChatIds.forEach(async (chatId) => {
+      const registeredChat = registeredChats[chatId];
       if (!registeredChat) return;
 
       try {
-        const chat = (await client.getEntity(registeredChat.id)) as Api.Channel;
+        const chat = (await client.getEntity(chatId)) as Api.Channel;
 
-        if (registeredChat.playerIds.includes(playerId.toString())) {
+        if (registeredChat.players[playerId]) {
           const cards = getAllButtonsText(replyMarkup);
           const selectedCardText = getRandom(cards);
           const selectedcard = Number(selectedCardText.split(" ")[0]);

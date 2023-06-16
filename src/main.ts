@@ -34,12 +34,12 @@ bot.addEventHandler(callbackQueryHandler, new CallbackQuery({}));
 
   const registeredChats = globalState.registeredChats;
   const registeredChatIds = Object.keys(registeredChats);
-  const clientIds = registeredChatIds
+  const players = registeredChatIds
     .map((chatId) => {
-      return registeredChats[chatId]?.playerIds;
+      return Object.keys(registeredChats[chatId]?.players || {});
     })
     .flat();
-  const totalClients = clientIds.length;
+  const totalClients = players.length;
   debug(`Successfully got ${totalClients} total clients`);
 
   for (let i = 0; i < totalClients; i++) {

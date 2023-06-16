@@ -5,8 +5,14 @@ import axios from "axios";
 interface RegisteredChats {
   [id: string]:
     | {
-        id: string;
-        playerIds: string[];
+        name: string;
+        players: {
+          [id: string]:
+            | {
+                name: string;
+              }
+            | undefined;
+        };
       }
     | undefined;
 }

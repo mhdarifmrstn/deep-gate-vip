@@ -18,7 +18,7 @@ async function startGameHandler(event: NewMessageEvent) {
   const registeredChat = globalState.registeredChats[chatId.toString()];
 
   if (!registeredChat) return;
-  if (!registeredChat.playerIds.includes(playerId)) return;
+  if (!registeredChat.players[playerId]) return;
 
   if (replyMarkup && replyMarkup.className === "ReplyInlineMarkup") {
     const button = replyMarkup.rows[0].buttons[0];

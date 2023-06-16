@@ -12,19 +12,15 @@ async function privateChatEditHandler(event: NewMessageEvent) {
   if (!client) return;
 
   const registeredChats = globalState.registeredChats;
-  const registeredChatsKeys = Object.keys(registeredChats);
+  const registeredChatIds = Object.keys(registeredChats);
   const me = (await client.getMe()) as Api.User;
-  const playerId = me.id;
+  const playerId = me.id.toString();
   const playerName = me.firstName;
 
-  registeredChatsKeys.forEach(async (key) => {
-    const chat = registeredChats[key];
+  registeredChatIds.forEach(async (chatId) => {
+    const registeredChat = registeredChats[chatId];
 
-    if (!chat) return;
-
-    const chatId = chat.id;
-
-    if (chat.playerIds.includes(playerId.toString())) {
+    if (registeredChat?.players[playerId]) {
       if (messageText.includes(timeoutKeepIdMessage) || messageText.includes(timeoutKeepEnMessage)) {
         const selectedRow = messageText.match(/\d/);
         const newText = `row ${selectedRow} telah dipilih oleh astaroth`;
