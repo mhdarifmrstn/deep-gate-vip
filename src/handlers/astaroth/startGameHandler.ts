@@ -22,8 +22,10 @@ async function startGameHandler(event: NewMessageEvent) {
         const startUrlParams = new URL(button.url).search;
         const gameId = new URLSearchParams(startUrlParams).get("start");
 
-        debug(`game start at ${registeredChat.name} with ${player.name} as participant`);
-        await client.sendMessage("@astarothrobot", { message: `/start ${gameId}` });
+        if (!gameId) return;
+
+        await globalState.selializedJoinGame(client, chatId, gameId);
+        debug(`Game start at ${registeredChat.name} with ${player.name} as participant`);
       }
     }
 }
