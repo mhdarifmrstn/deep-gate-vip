@@ -36,9 +36,7 @@ interface GlobalState {
   debug: boolean;
   redisClient: Redis;
   playerLimit: PlayerLimit;
-  joinTimeout: JoinTimeout;
   totalJoinCurrentGame: TotalJoinCurrentGame;
-  resetTotalJoinDelay: number;
   lastJoinTask: Promise<any>;
 }
 class GlobalState {
@@ -53,27 +51,20 @@ class GlobalState {
     this.debug = Boolean(process.env.DEEP_GATE_VIP_DEBUG);
     this.redisClient = new Redis(process.env.REDIS_URL || "");
     this.playerLimit = {};
-    this.joinTimeout = {};
     this.totalJoinCurrentGame = {};
-    this.resetTotalJoinDelay = 3;
     this.lastJoinTask = Promise.resolve();
   }
 
   async joinGame(client: TelegramClient, chatId: string, gameId: string) {
-    console.log(this.totalJoinCurrentGame[chatId]);
     if (this.totalJoinCurrentGame[chatId] === undefined) {
       this.totalJoinCurrentGame[chatId] = 0;
     }
-    if (this.totalJoinCurrentGame[chatId] < (await this.getPlayerLimit(chatId))) {
+    const playerLimit = await this.getPlayerLimit(chatId);
+
+    if (this.totalJoinCurrentGame[chatId] < playerLimit) {
       this.totalJoinCurrentGame[chatId]++;
       await client.sendMessage("@astarothrobot", { message: `/start ${gameId}` });
-      clearTimeout(this.joinTimeout[chatId]);
-
-      this.joinTimeout[chatId] = setTimeout(() => {
-        this.totalJoinCurrentGame[chatId] = 0;
-      }, this.resetTotalJoinDelay * 1000);
     } else {
-      console.log("total join:", this.totalJoinCurrentGame[chatId]);
       console.log(`Player can't join this game cause the slot is full`);
     }
   }
@@ -102,8 +93,8 @@ class GlobalState {
 
     if (!currentGroupLimit) {
       const defaultLimit = 2;
-      currentGroupLimit = Number(await this.redisClient.get(`${chatId}-player-limit`));
-      this.playerLimit[chatId] = currentGroupLimit || defaultLimit;
+      currentGroupLimit = Number(await this.redisClient.get(`${chatId}-player-limit`)) || defaultLimit;
+      this.playerLimit[chatId] = currentGroupLimit;
     }
     return currentGroupLimit;
   }
