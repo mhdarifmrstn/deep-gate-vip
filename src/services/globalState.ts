@@ -56,24 +56,39 @@ class GlobalState {
   }
 
   async joinGame(client: TelegramClient, chatId: string, gameId: string) {
-    if (this.totalJoinCurrentGame[chatId] === undefined) {
-      this.totalJoinCurrentGame[chatId] = 0;
-    }
-    const playerLimit = await this.getPlayerLimit(chatId);
+    // new bug of this i don't know on which line
+    // Bot logged in successfully
+    // 2023-06-17T17:18:35.448Z Game start at Dark Fears Privat 3 with anetha as participant
+    // 2023-06-17T17:18:35.448Z Player mahendra🇸🇲𝐕𝐇𝟑𝟏]ᴰ¹ can't join the game cause the slot is full
+    // node:internal/process/promises:289
+    //             triggerUncaughtException(err, true /* fromPromise */);
+    //             ^
 
-    if (this.totalJoinCurrentGame[chatId] < playerLimit) {
-      this.totalJoinCurrentGame[chatId]++;
-      await client.sendMessage("@astarothrobot", { message: `/start ${gameId}` });
-    } else {
-      console.log(`Player can't join this game cause the slot is full`);
-    }
-  }
+    // [UnhandledPromiseRejection: This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). The promise rejected with the reason "".] {
+    //   code: 'ERR_UNHANDLED_REJECTION'
+    // }
+    // STEP TO REPRODUCE
+    // run this project and start the game
+    // on current limit, the default is only 1 player can join
+    // player two will throw error but can be catched
+    // right after /forcestart, try to /startgame again without restarting the project
+    // at this time, the error above will showed
 
-  async selializedJoinGame(client: TelegramClient, chatId: string, gameId: string) {
-    const currentJoinTask: Promise<any> = new Promise(async (resolve) => {
+    const currentJoinTask = new Promise(async (resolve, reject) => {
       await this.lastJoinTask;
-      const result = await this.joinGame(client, chatId, gameId);
-      resolve(result);
+
+      if (this.totalJoinCurrentGame[chatId] === undefined) {
+        this.totalJoinCurrentGame[chatId] = 0;
+      }
+      const playerLimit = await this.getPlayerLimit(chatId);
+
+      if (this.totalJoinCurrentGame[chatId] < playerLimit) {
+        this.totalJoinCurrentGame[chatId]++;
+        await client.sendMessage("@astarothrobot", { message: `/start ${gameId}` });
+      } else {
+        reject();
+      }
+      resolve("");
     });
     this.lastJoinTask = currentJoinTask;
     return currentJoinTask;
@@ -92,7 +107,7 @@ class GlobalState {
     let currentGroupLimit = this.playerLimit[chatId];
 
     if (!currentGroupLimit) {
-      const defaultLimit = 2;
+      const defaultLimit = 1;
       currentGroupLimit = Number(await this.redisClient.get(`${chatId}-player-limit`)) || defaultLimit;
       this.playerLimit[chatId] = currentGroupLimit;
     }
