@@ -76,6 +76,10 @@ class GlobalState {
     return currentJoinTask;
   }
 
+  clearTotalJoinGame(chatId: string) {
+    this.totalJoinCurrentGame[chatId] = 0;
+  }
+
   async getRegisteredChats() {
     const REGISTERED_CHATS_CONFIG_URL = process.env.REGISTERED_CHATS_CONFIG_URL;
 
