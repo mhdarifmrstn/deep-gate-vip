@@ -19,9 +19,6 @@ interface RegisteredChats {
 interface PlayerLimit {
   [chatId: string]: number | undefined;
 }
-interface JoinTimeout {
-  [chatId: string]: NodeJS.Timeout | undefined;
-}
 interface TotalJoinCurrentGame {
   [chatId: string]: number;
 }
@@ -56,27 +53,12 @@ class GlobalState {
   }
 
   async joinGame(client: TelegramClient, chatId: string, gameId: string) {
-    // new bug of this i don't know on which line
-    // Bot logged in successfully
-    // 2023-06-17T17:18:35.448Z Game start at Dark Fears Privat 3 with anetha as participant
-    // 2023-06-17T17:18:35.448Z Player mahendra🇸🇲𝐕𝐇𝟑𝟏]ᴰ¹ can't join the game cause the slot is full
-    // node:internal/process/promises:289
-    //             triggerUncaughtException(err, true /* fromPromise */);
-    //             ^
-
-    // [UnhandledPromiseRejection: This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). The promise rejected with the reason "".] {
-    //   code: 'ERR_UNHANDLED_REJECTION'
-    // }
-    // STEP TO REPRODUCE
-    // run this project and start the game
-    // on current limit, the default is only 1 player can join
-    // player two will throw error but can be catched
-    // right after /forcestart, try to /startgame again without restarting the project
-    // at this time, the error above will showed
-
     const currentJoinTask = new Promise(async (resolve, reject) => {
-      await this.lastJoinTask;
-
+      try {
+        await this.lastJoinTask;
+      } catch (_err) {
+        reject();
+      }
       if (this.totalJoinCurrentGame[chatId] === undefined) {
         this.totalJoinCurrentGame[chatId] = 0;
       }
