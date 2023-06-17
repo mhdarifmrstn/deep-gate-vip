@@ -22,8 +22,14 @@ async function startGameHandler(event: NewMessageEvent) {
         const startUrlParams = new URL(button.url).search;
         const gameId = new URLSearchParams(startUrlParams).get("start");
 
-        debug(`game start at ${registeredChat.name} with ${player.name} as participant`);
-        await client.sendMessage("@astarothrobot", { message: `/start ${gameId}` });
+        if (!gameId) return;
+
+        try {
+          await globalState.joinGame(client, chatId, gameId);
+          debug(`Game start at ${registeredChat.name} with ${player.name} as participant`);
+        } catch (_err) {
+          debug(`Player ${player.name} can't join the game cause the slot is full`);
+        }
       }
     }
 }
