@@ -18,18 +18,35 @@ async function callbackQueryHandler(event: CallbackQueryEvent) {
     const chatId = event.chatId?.toString() || "";
     const registeredChat = globalState.registeredChats[chatId];
     const messageId = query.msgId;
-    const data = query.data?.toString();
+    const x = globalState.callbackQuerySeparator;
+    const data = query.data?.toString().split(x);
     const senderName = sender.firstName;
 
     if (registeredChat && data) {
-      const rowNumber = data.split(" ")[0];
-      debug(`${senderName} from ${registeredChat.name} memilih row ${rowNumber}`);
+      const option = data[0];
 
-      await client.editMessage(chatId, {
-        message: messageId,
-        text: `${senderName} memilih row ${rowNumber}`,
-      });
-      await globalState.keepCard.keepRow(chatId.toString(), data);
+      if (option === "keepCard") {
+        const keepCardId = Number(data[1]);
+        const rowData = data[2];
+        const rowNumber = rowData.split(" ")[0];
+        const keepCard = globalState.keepCard;
+        const currentChat = keepCard.task[chatId];
+
+        if (keepCardId === currentChat.keepCardId) {
+          debug(`${senderName} from ${registeredChat.name} memilih row ${rowNumber}`);
+
+          await client.editMessage(chatId, {
+            message: messageId,
+            text: `${senderName} memilih row ${rowNumber}`,
+          });
+          await keepCard.keepRow(chatId.toString(), rowData);
+        } else {
+          await client.editMessage(chatId, {
+            message: messageId,
+            text: `${senderName}, task ini sudah tidak valid`,
+          });
+        }
+      }
     }
   }
 }

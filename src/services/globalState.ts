@@ -35,6 +35,7 @@ interface GlobalState {
   playerLimit: PlayerLimit;
   totalJoinCurrentGame: TotalJoinCurrentGame;
   lastJoinTask: Promise<any>;
+  callbackQuerySeparator: string;
 }
 class GlobalState {
   constructor() {
@@ -50,6 +51,7 @@ class GlobalState {
     this.playerLimit = {};
     this.totalJoinCurrentGame = {};
     this.lastJoinTask = Promise.resolve();
+    this.callbackQuerySeparator = "_";
   }
 
   async joinGame(client: TelegramClient, chatId: string, gameId: string) {

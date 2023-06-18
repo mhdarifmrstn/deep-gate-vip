@@ -2,6 +2,7 @@ import { Api, TelegramClient } from "telegram";
 import bot from "../botAccount.js";
 import { Button } from "telegram/tl/custom/button.js";
 import globalState from "./globalState.js";
+import getRandomId from "../extra/getRandomId.js";
 
 class KeepCard {
   task: {
@@ -9,6 +10,7 @@ class KeepCard {
       rows: number[];
       message?: Api.Message;
       waitingMessageId: number;
+      keepCardId: number;
     };
   };
   bot: TelegramClient;
@@ -25,22 +27,28 @@ class KeepCard {
       this.task[chatId] = {
         rows: [],
         waitingMessageId: NaN,
+        keepCardId: NaN,
       };
     });
   }
 
   async add(chatId: string, message: Api.Message, rows: string[]) {
-    this.task[chatId].message = message;
+    const currentChat = this.task[chatId];
+    const keepCardId = getRandomId();
+    const x = globalState.callbackQuerySeparator;
+
+    currentChat.message = message;
+    currentChat.keepCardId = keepCardId;
 
     const waitingMessage = await bot.sendMessage(chatId, {
       message: "Pilih row mana cuy",
       buttons: bot.buildReplyMarkup(
         rows.map((row) => {
-          return [Button.inline(row, Buffer.from(row))];
+          return [Button.inline(row, Buffer.from(`keepCard${x}${keepCardId}${x}${row}`))];
         })
       ),
     });
-    this.task[chatId].waitingMessageId = waitingMessage.id;
+    currentChat.waitingMessageId = waitingMessage.id;
   }
 
   async keepRow(chatId: string, text: string) {
