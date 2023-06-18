@@ -7,6 +7,10 @@ async function setBotCommands(bot: TelegramClient) {
       langCode: "en",
       commands: [
         new Api.BotCommand({
+          command: "config",
+          description: "Pengaturan",
+        }),
+        new Api.BotCommand({
           command: "uptime",
           description: "Lihat sudah berapa lama botnya jalan",
         }),
