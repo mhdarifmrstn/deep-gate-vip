@@ -95,7 +95,7 @@ class GlobalState {
     let currentGroupLimit = this.playerLimit[chatId];
 
     if (!currentGroupLimit) {
-      const defaultLimit = 1;
+      const defaultLimit = 2;
       currentGroupLimit = Number(await this.redisClient.get(`${chatId}-player-limit`)) || defaultLimit;
       this.playerLimit[chatId] = currentGroupLimit;
     }
