@@ -41,7 +41,7 @@ class GlobalState {
   constructor() {
     this.startTime = Date.now();
     this.astarothId = "2075925757";
-    this.joinDelay = 2;
+    this.joinDelay = 0;
     this.selectCardDelay = 0;
     this.selectedCards = new SelectCard();
     this.keepCard = new KeepCard();
