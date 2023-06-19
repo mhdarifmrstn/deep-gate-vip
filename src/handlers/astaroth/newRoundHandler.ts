@@ -7,8 +7,8 @@ async function newRoundHandler(event: NewMessageEvent) {
   const registeredChat = globalState.registeredChats[chatId];
 
   if (registeredChat) {
-    globalState.selectedCards.clearCards(chatId);
-    debug(`cleared selected cards on ${registeredChat.name}`);
+    const cleared = globalState.selectedCards.clearCards(chatId);
+    if (cleared) debug(`cleared selected cards on ${registeredChat.name}`);
   }
 }
 

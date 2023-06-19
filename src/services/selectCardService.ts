@@ -7,6 +7,7 @@ class SelectCard {
     [chatId: string]: {
       cards: number[];
       totalClient: number;
+      cardsCleared: boolean;
     };
   };
   bot: TelegramClient;
@@ -27,6 +28,7 @@ class SelectCard {
       this.task[chatId] = {
         cards: [],
         totalClient,
+        cardsCleared: false,
       };
     });
   }
@@ -53,7 +55,21 @@ class SelectCard {
   }
 
   clearCards(chatId: string) {
-    this.task[chatId].cards = [];
+    const currentChat = this.task[chatId];
+
+    if (!currentChat.cardsCleared) {
+      currentChat.cards = [];
+      currentChat.cardsCleared = true;
+
+      // to prevent multiple clearCards events fired at the same time
+      // cause we only need to clear it once on every round
+      setTimeout(() => {
+        currentChat.cardsCleared = false;
+      }, 5000);
+
+      return true;
+    }
+    return false;
   }
 }
 
