@@ -35,9 +35,16 @@ class SelectCard {
 
   async add(chatId: string, card: number) {
     const chatTask = this.task[chatId];
+    const defaultTotalPlayer = 2;
+    const totalPlayer = chatTask.totalClient;
+    let totalActivePlayer = globalState.playerLimit[chatId] || defaultTotalPlayer;
+
     chatTask.cards.push(card);
 
-    if (chatTask.cards.length >= chatTask.totalClient) {
+    if (totalActivePlayer > totalPlayer) {
+      totalActivePlayer = totalPlayer;
+    }
+    if (chatTask.cards.length >= totalActivePlayer) {
       this.orderCards(chatId);
       await this.sendMessage(chatId);
       this.clearCards(chatId);
