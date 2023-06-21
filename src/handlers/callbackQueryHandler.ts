@@ -59,7 +59,7 @@ async function callbackQueryHandler(event: CallbackQueryEvent) {
             const buttons: ButtonLike[][] = [];
 
             while (arr.length) {
-              const rows = arr.splice(0, 4);
+              const rows = arr.splice(0, 3);
 
               buttons.push(
                 rows.map((n) => {
