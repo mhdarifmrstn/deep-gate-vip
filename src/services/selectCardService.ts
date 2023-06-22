@@ -34,11 +34,14 @@ class SelectCard {
 
   async add(chatId: string, card: number) {
     const chatTask = this.task[chatId];
-    const totalPlayer = globalState.totalJoinCurrentGame[chatId];
+    const players = globalState.chatPlayers[chatId];
 
+    if (!players) return;
     chatTask.cards.push(card);
 
-    if (chatTask.cards.length >= totalPlayer) {
+    const totalPlayers = Object.keys(players).length;
+
+    if (chatTask.cards.length >= totalPlayers) {
       this.orderCards(chatId);
       await this.sendMessage(chatId);
       this.clearCards(chatId);

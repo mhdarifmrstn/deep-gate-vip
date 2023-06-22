@@ -25,10 +25,10 @@ async function startGameHandler(event: NewMessageEvent) {
         if (!gameId) return;
 
         try {
-          await globalState.joinGame(client, chatId, gameId);
+          await globalState.joinGame(client, chat, gameId, player);
           debug(`Game start at ${chat.name} with ${player.name} as participant`);
-        } catch (_err) {
-          debug(`Player ${player.name} can't join the game cause the slot is full`);
+        } catch (err) {
+          debug(`Player ${player.name} can't join the game cause ${(err as Error).message}`);
         }
       }
     }

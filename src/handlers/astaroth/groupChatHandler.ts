@@ -25,15 +25,15 @@ async function groupChatHandler(event: NewMessageEvent) {
     astaroth.newRoundHandler(event);
   }
   if (text.includes(notEnoughPlayerIdText) || text.includes(notEnoughPlayerEnText)) {
-    globalState.clearTotalJoinGame(chatId);
+    globalState.clearChatPlayers(chatId);
     debug(`Cleared total join game on ${chatName}`);
   }
   if (text.includes(gameKilledIdText) || text.includes(gameKilledEnText)) {
-    globalState.clearTotalJoinGame(chatId);
+    globalState.clearChatPlayers(chatId);
     debug(`Cleared total join game on ${chatName}`);
   }
   if (text.includes(gameEndedIdText) || text.includes(gameEndedEnText)) {
-    globalState.clearTotalJoinGame(chatId);
+    globalState.clearChatPlayers(chatId);
     debug(`Cleared total join game on ${chatName}`);
   }
 }

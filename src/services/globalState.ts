@@ -18,15 +18,17 @@ interface Players {
 interface Chats {
   [id: string]: Chat | undefined;
 }
+interface ChatPlayers {
+  [chatId: string]: {
+    [playerId: string]: Player | undefined;
+  };
+}
 interface ConfigResponse {
   chats: Chats;
   players: Players;
 }
 interface PlayerLimit {
   [chatId: string]: number | undefined;
-}
-interface TotalJoinCurrentGame {
-  [chatId: string]: number;
 }
 interface GlobalState {
   startTime: number;
@@ -40,7 +42,7 @@ interface GlobalState {
   debug: boolean;
   redisClient: Redis;
   playerLimit: PlayerLimit;
-  totalJoinCurrentGame: TotalJoinCurrentGame;
+  chatPlayers: ChatPlayers;
   lastJoinTask: Promise<any>;
   callbackQuerySeparator: string;
 }
@@ -56,28 +58,39 @@ class GlobalState {
     this.debug = Boolean(process.env.DEEP_GATE_VIP_DEBUG);
     this.redisClient = new Redis(process.env.REDIS_URL || "");
     this.playerLimit = {};
-    this.totalJoinCurrentGame = {};
+    this.chatPlayers = {};
     this.lastJoinTask = Promise.resolve();
     this.callbackQuerySeparator = "_";
   }
 
-  async joinGame(client: TelegramClient, chatId: string, gameId: string) {
+  async joinGame(client: TelegramClient, chat: Chat, gameId: string, player: Player) {
     const currentJoinTask = new Promise(async (resolve, reject) => {
       try {
         await this.lastJoinTask;
-      } catch (_err) {
-        reject();
+      } catch (err) {
+        reject(err);
       }
-      if (this.totalJoinCurrentGame[chatId] === undefined) {
-        this.totalJoinCurrentGame[chatId] = 0;
+      const chatId = chat.id;
+      const playerId = player.id;
+
+      if (!this.chatPlayers[chatId]) {
+        this.chatPlayers[chatId] = {
+          [playerId]: {
+            id: playerId,
+            name: player.name,
+          },
+        };
       }
+      const currentPlayers = this.chatPlayers[chatId];
+      if (!currentPlayers) reject({ message: "currentPlayers is undefined" });
+      const totalCurrentPlayers = Object.keys(currentPlayers).length;
       const playerLimit = await this.getPlayerLimit(chatId);
 
-      if (this.totalJoinCurrentGame[chatId] < playerLimit) {
-        this.totalJoinCurrentGame[chatId]++;
+      if (totalCurrentPlayers < playerLimit) {
         await client.sendMessage("@astarothrobot", { message: `/start ${gameId}` });
+        currentPlayers[playerId] = player;
       } else {
-        reject();
+        reject({ message: "the slot is full" });
       }
       resolve("");
     });
@@ -85,8 +98,8 @@ class GlobalState {
     return currentJoinTask;
   }
 
-  clearTotalJoinGame(chatId: string) {
-    this.totalJoinCurrentGame[chatId] = 0;
+  clearChatPlayers(chatId: string) {
+    delete this.chatPlayers[chatId];
   }
 
   async getConfig() {
