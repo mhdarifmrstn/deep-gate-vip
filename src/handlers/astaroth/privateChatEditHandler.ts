@@ -7,30 +7,25 @@ async function privateChatEditHandler(event: NewMessageEvent) {
   const timeoutKeepIdMessage = "Waktu habis!\nRow";
   const timeoutKeepEnMessage = "Time's up!\nRow";
   const client = event.client;
+  const chatId = event.chatId?.toString();
 
-  if (!client) return;
+  if (!client || !chatId) return;
 
-  const registeredChats = globalState.registeredChats;
-  const registeredChatIds = Object.keys(registeredChats);
-  const me = client._selfInputPeer;
-  const playerId = me?.userId.toString() || "";
+  const playerId = client._selfInputPeer?.userId.toString() || "";
+  const chat = globalState.registeredChats[chatId];
+  const player = globalState.registeredPlayers[playerId];
 
-  registeredChatIds.forEach(async (chatId) => {
-    const registeredChat = registeredChats[chatId];
-    const player = registeredChat?.players[playerId];
+  if (chat && player) {
+    if (messageText.includes(timeoutKeepIdMessage) || messageText.includes(timeoutKeepEnMessage)) {
+      const selectedRow = messageText.match(/\d/);
+      const newText = `row ${selectedRow} telah dipilih oleh astaroth`;
+      const waitingMessageId = globalState.keepCard.task[chatId.toString()].waitingMessageId;
+      const bot = globalState.keepCard.bot;
 
-    if (player) {
-      if (messageText.includes(timeoutKeepIdMessage) || messageText.includes(timeoutKeepEnMessage)) {
-        const selectedRow = messageText.match(/\d/);
-        const newText = `row ${selectedRow} telah dipilih oleh astaroth`;
-        const waitingMessageId = globalState.keepCard.task[chatId.toString()].waitingMessageId;
-        const bot = globalState.keepCard.bot;
-
-        debug(`astaroth choose ${player.name} row ${selectedRow} because it has passed the time limit`);
-        await bot.editMessage(chatId, { message: waitingMessageId, text: newText });
-      }
+      debug(`astaroth choose ${player.name} row ${selectedRow} because it has passed the time limit`);
+      await bot.editMessage(chatId, { message: waitingMessageId, text: newText });
     }
-  });
+  }
 }
 
 export default privateChatEditHandler;

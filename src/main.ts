@@ -22,19 +22,13 @@ bot.addEventHandler(commandHandler, new NewMessage({}));
 
 (async () => {
   debug(`Global State getRegisteredChats()`);
-  await globalState.getRegisteredChats();
+  await globalState.getConfig();
 
   globalState.selectedCards.initialize();
   globalState.keepCard.initialize();
 
-  const registeredChats = globalState.registeredChats;
-  const registeredChatIds = Object.keys(registeredChats);
-  const players = registeredChatIds
-    .map((chatId) => {
-      return Object.keys(registeredChats[chatId]?.players || {});
-    })
-    .flat();
-  const totalClients = players.length;
+  const players = globalState.registeredPlayers;
+  const totalClients = Object.keys(players).length;
 
   debug(`Successfully got ${totalClients} total clients`);
 

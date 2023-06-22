@@ -18,11 +18,10 @@ class SelectCard {
   }
 
   initialize() {
-    const registeredChats = globalState.registeredChats;
-    const chatIds = Object.keys(registeredChats);
+    const chatIds = Object.keys(globalState.registeredChats);
 
     chatIds.map((chatId) => {
-      const players = registeredChats[chatId]?.players || {};
+      const players = globalState.registeredPlayers;
       const totalClient = Object.keys(players).length;
 
       this.task[chatId] = {
@@ -35,16 +34,11 @@ class SelectCard {
 
   async add(chatId: string, card: number) {
     const chatTask = this.task[chatId];
-    const defaultTotalPlayer = 2;
-    const totalPlayer = chatTask.totalClient;
-    let totalActivePlayer = globalState.playerLimit[chatId] || defaultTotalPlayer;
+    const totalPlayer = globalState.totalJoinCurrentGame[chatId];
 
     chatTask.cards.push(card);
 
-    if (totalActivePlayer > totalPlayer) {
-      totalActivePlayer = totalPlayer;
-    }
-    if (chatTask.cards.length >= totalActivePlayer) {
+    if (chatTask.cards.length >= totalPlayer) {
       this.orderCards(chatId);
       await this.sendMessage(chatId);
       this.clearCards(chatId);

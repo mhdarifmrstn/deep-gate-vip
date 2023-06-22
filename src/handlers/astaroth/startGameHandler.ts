@@ -10,11 +10,11 @@ async function startGameHandler(event: NewMessageEvent) {
   if (!client) return;
 
   const chatId = event.chatId?.toString() || "";
-  const registeredChat = globalState.registeredChats[chatId];
+  const chat = globalState.registeredChats[chatId];
   const meId = client._selfInputPeer?.userId.toString() || "";
-  const player = registeredChat?.players[meId];
+  const player = globalState.registeredPlayers[meId];
 
-  if (player)
+  if (chat && player)
     if (replyMarkup && replyMarkup.className === "ReplyInlineMarkup") {
       const button = replyMarkup.rows[0].buttons[0];
 
@@ -26,7 +26,7 @@ async function startGameHandler(event: NewMessageEvent) {
 
         try {
           await globalState.joinGame(client, chatId, gameId);
-          debug(`Game start at ${registeredChat.name} with ${player.name} as participant`);
+          debug(`Game start at ${chat.name} with ${player.name} as participant`);
         } catch (_err) {
           debug(`Player ${player.name} can't join the game cause the slot is full`);
         }

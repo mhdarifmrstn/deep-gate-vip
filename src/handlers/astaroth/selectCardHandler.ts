@@ -8,32 +8,29 @@ import debug from "../../services/debug.js";
 async function selectCardHandler(event: NewMessageEvent) {
   const client = event.client;
   const message = event.message;
-  if (!client) return;
-  const me = client._selfInputPeer;
-  const playerId = me?.userId.toString() || "";
   const replyMarkup = message.replyMarkup;
-  const registeredChats = globalState.registeredChats;
-  const registeredChatIds = Object.keys(registeredChats);
+  const chatId = event.chatId?.toString();
+
+  if (!client || !chatId) return;
 
   if (replyMarkup && replyMarkup.className === "ReplyInlineMarkup") {
-    registeredChatIds.forEach(async (chatId) => {
-      const registeredChat = registeredChats[chatId];
-      const player = registeredChat?.players[playerId];
+    const playerId = client._selfInputPeer?.userId.toString() || "";
+    const chat = globalState.registeredChats[chatId];
+    const player = globalState.registeredPlayers[playerId];
 
-      try {
-        if (player) {
-          const cards = getAllButtonsText(replyMarkup);
-          const selectedCardText = getRandom(cards);
-          const selectedcard = Number(selectedCardText.split(" ")[0]);
+    try {
+      if (chat && player) {
+        const cards = getAllButtonsText(replyMarkup);
+        const selectedCardText = getRandom(cards);
+        const selectedcard = Number(selectedCardText.split(" ")[0]);
 
-          await sleep(globalState.selectCardDelay);
-          await message.click({ text: selectedCardText });
-          debug(`player ${player.name} from ${registeredChat.name} choose ${selectedcard}`);
+        await sleep(globalState.selectCardDelay);
+        await message.click({ text: selectedCardText });
+        debug(`player ${player.name} from ${chat.name} choose ${selectedcard}`);
 
-          globalState.selectedCards.add(chatId, selectedcard);
-        }
-      } catch {}
-    });
+        globalState.selectedCards.add(chatId, selectedcard);
+      }
+    } catch {}
   }
 }
 

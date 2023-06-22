@@ -5,16 +5,22 @@ import { Redis } from "ioredis";
 import { TelegramClient } from "telegram";
 
 interface Player {
+  id: string;
   name: string;
 }
 interface Chat {
+  id: string;
   name: string;
-  players: {
-    [id: string]: Player | undefined;
-  };
 }
-interface RegisteredChats {
+interface Players {
+  [id: string]: Player | undefined;
+}
+interface Chats {
   [id: string]: Chat | undefined;
+}
+interface ConfigResponse {
+  chats: Chats;
+  players: Players;
 }
 interface PlayerLimit {
   [chatId: string]: number | undefined;
@@ -29,7 +35,8 @@ interface GlobalState {
   selectCardDelay: number;
   selectedCards: SelectCard;
   keepCard: KeepCard;
-  registeredChats: RegisteredChats;
+  registeredChats: Chats;
+  registeredPlayers: Players;
   debug: boolean;
   redisClient: Redis;
   playerLimit: PlayerLimit;
@@ -82,13 +89,15 @@ class GlobalState {
     this.totalJoinCurrentGame[chatId] = 0;
   }
 
-  async getRegisteredChats() {
-    const REGISTERED_CHATS_CONFIG_URL = process.env.REGISTERED_CHATS_CONFIG_URL;
+  async getConfig() {
+    const CONFIG_URL = process.env.CONFIG_URL;
 
-    if (!REGISTERED_CHATS_CONFIG_URL) {
-      throw Error("Provide REGISTERED_CHATS_CONFIG_URL");
+    if (!CONFIG_URL) {
+      throw Error("Provide CONFIG_URL");
     }
-    this.registeredChats = (await axios.get<RegisteredChats>(REGISTERED_CHATS_CONFIG_URL)).data;
+    const config = (await axios.get<ConfigResponse>(CONFIG_URL)).data;
+    this.registeredChats = config.chats;
+    this.registeredPlayers = config.players;
   }
 
   async getPlayerLimit(chatId: string) {
