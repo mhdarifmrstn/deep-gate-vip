@@ -100,6 +100,7 @@ class GlobalState {
 
   clearChatPlayers(chatId: string) {
     delete this.chatPlayers[chatId];
+    this.lastJoinTask = Promise.resolve();
   }
 
   async getConfig() {

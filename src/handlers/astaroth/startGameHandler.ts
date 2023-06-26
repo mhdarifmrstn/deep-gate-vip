@@ -1,6 +1,7 @@
 import { NewMessageEvent } from "telegram/events/index.js";
 import globalState from "../../services/globalState.js";
 import debug from "../../services/debug.js";
+import getCurrentGame from "../../extra/getCurrentGame.js";
 
 async function startGameHandler(event: NewMessageEvent) {
   const message = event.message;
@@ -9,12 +10,13 @@ async function startGameHandler(event: NewMessageEvent) {
 
   if (!client) return;
 
-  const chatId = event.chatId?.toString() || "";
-  const chat = globalState.registeredChats[chatId];
-  const meId = client._selfInputPeer?.userId.toString() || "";
-  const player = globalState.registeredPlayers[meId];
+  const currentChatId = event.chatId?.toString() || "";
+  const currentChat = globalState.registeredChats[currentChatId];
+  const playerId = client._selfInputPeer?.userId.toString() || "";
+  const player = globalState.registeredPlayers[playerId];
+  const arePlayed = getCurrentGame(playerId);
 
-  if (chat && player)
+  if (currentChat && player && !arePlayed) {
     if (replyMarkup && replyMarkup.className === "ReplyInlineMarkup") {
       const button = replyMarkup.rows[0].buttons[0];
 
@@ -25,13 +27,14 @@ async function startGameHandler(event: NewMessageEvent) {
         if (!gameId) return;
 
         try {
-          await globalState.joinGame(client, chat, gameId, player);
-          debug(`Game start at ${chat.name} with ${player.name} as participant`);
+          await globalState.joinGame(client, currentChat, gameId, player);
+          debug(`Game start at ${currentChat.name} with ${player.name} as participant`);
         } catch (err) {
           debug(`Player ${player.name} can't join the game cause ${(err as Error).message}`);
         }
       }
     }
+  }
 }
 
 export default startGameHandler;

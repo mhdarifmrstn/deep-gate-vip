@@ -26,15 +26,15 @@ async function groupChatHandler(event: NewMessageEvent) {
   }
   if (text.includes(notEnoughPlayerIdText) || text.includes(notEnoughPlayerEnText)) {
     globalState.clearChatPlayers(chatId);
-    debug(`Cleared total join game on ${chatName}`);
+    debug(`Cleared chat players game on ${chatName}`);
   }
   if (text.includes(gameKilledIdText) || text.includes(gameKilledEnText)) {
     globalState.clearChatPlayers(chatId);
-    debug(`Cleared total join game on ${chatName}`);
+    debug(`Cleared chat players game on ${chatName}`);
   }
   if (text.includes(gameEndedIdText) || text.includes(gameEndedEnText)) {
     globalState.clearChatPlayers(chatId);
-    debug(`Cleared total join game on ${chatName}`);
+    debug(`Cleared chat players game on ${chatName}`);
   }
 }
 
