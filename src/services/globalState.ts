@@ -3,6 +3,7 @@ import KeepCard from "./keepCardService.js";
 import axios from "axios";
 import { Redis } from "ioredis";
 import { TelegramClient } from "telegram";
+import sleep from "../extra/sleep.js";
 
 interface Player {
   id: string;
@@ -50,7 +51,7 @@ class GlobalState {
   constructor() {
     this.startTime = Date.now();
     this.astarothId = "2075925757";
-    this.joinDelay = 0;
+    this.joinDelay = 1;
     this.selectCardDelay = 0;
     this.selectedCards = new SelectCard();
     this.keepCard = new KeepCard();
@@ -64,6 +65,8 @@ class GlobalState {
   }
 
   async joinGame(client: TelegramClient, chat: Chat, gameId: string, player: Player) {
+    await sleep(this.joinDelay);
+
     const currentJoinTask = new Promise(async (resolve, reject) => {
       try {
         await this.lastJoinTask;
