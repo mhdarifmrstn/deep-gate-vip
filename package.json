@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "node --loader ts-node/esm ./src/main.ts",
     "start": "node ./dist/main.js",
-    "build": "tsc"
+    "build": "yarn format && tsc",
+    "format": "prettier -w ."
   },
   "license": "MIT",
   "dependencies": {
@@ -19,6 +20,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.2.3",
+    "prettier": "^3.3.3",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
   }
