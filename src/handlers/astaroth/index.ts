@@ -5,6 +5,8 @@ import privateChatEditHandler from "./privateChatEditHandler.js";
 import privateChatHandler from "./privateChatHandler.js";
 import selectCardHandler from "./selectCardHandler.js";
 import startGameHandler from "./startGameHandler.js";
+import maxPlayerHandler from "./maxPlayerHandler.js";
+import groupChatEditHandler from "./groupChatEditHandler.js";
 
 export default {
   groupChatHandler,
@@ -14,4 +16,6 @@ export default {
   startGameHandler,
   keepCardHandler,
   newRoundHandler,
+  maxPlayerHandler,
+  groupChatEditHandler,
 };

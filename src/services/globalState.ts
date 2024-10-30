@@ -117,6 +117,11 @@ class GlobalState {
     this.registeredPlayers = config.players;
   }
 
+  getCachedPlayerLimit(chatId: string) {
+    const defaultLimit = 2;
+    return this.playerLimit[chatId] || defaultLimit;
+  }
+
   async getPlayerLimit(chatId: string) {
     let currentGroupLimit = this.playerLimit[chatId];
 
