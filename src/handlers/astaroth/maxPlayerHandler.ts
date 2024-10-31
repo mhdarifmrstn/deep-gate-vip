@@ -10,7 +10,7 @@ async function maxPlayerHandler(event: NewMessageEvent) {
   // Currently, this isn't an issue because our if statements handle it correctly.
   const totalJoinedPlayers = Number(event.message.text.match(/\d+/g)?.[0]);
   const botApiChatId = "-100" + event.chatId?.toJSNumber();
-  const currentPlayerLimit = globalState.getCachedPlayerLimit(botApiChatId);
+  const currentPlayerLimit = globalState.getCachedPlayerLimit(botApiChatId) + 1;
 
   if (totalJoinedPlayers >= currentPlayerLimit) {
     const forceStarterId = bigInt(Number(process.env.FORCE_STARTER_ID || 1));
