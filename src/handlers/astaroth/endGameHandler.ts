@@ -9,11 +9,13 @@ async function endGameHandler(event: NewMessageEvent) {
 }
 async function _endGameHandler(event: NewMessageEvent) {
   const chatId = event.chatId?.toString() || "";
-  const chatName = globalState.registeredChats[chatId]?.name;
+  const chat = globalState.registeredChats[chatId];
 
-  globalState.clearChatPlayers(chatId);
-  debug(`Cleared chat players game on ${chatName}`);
-  await sendStartCommand(chatId);
+  if (chat) {
+    globalState.clearChatPlayers(chatId);
+    debug(`Cleared chat players game on ${chat.name}`);
+    await sendStartCommand(chatId);
+  }
 }
 
 export default endGameHandler;
