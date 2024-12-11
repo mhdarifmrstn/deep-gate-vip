@@ -1,7 +1,5 @@
 import { NewMessageEvent } from "telegram/events/index.js";
 import astaroth from "./index.js";
-import globalState from "../../services/globalState.js";
-import debug from "../../services/debug.js";
 
 async function groupChatHandler(event: NewMessageEvent) {
   const text = event.message.text;
@@ -15,8 +13,6 @@ async function groupChatHandler(event: NewMessageEvent) {
   const gameKilledEnText = "Aye! Permainan sudah diberhentikan!";
   const gameEndedIdText = "Memenangkan permainan! Permainan berakhir!";
   const gameEndedEnText = "won the game! Game ended!";
-  const chatId = event.chatId?.toString() || "";
-  const chatName = globalState.registeredChats[chatId]?.name;
 
   if (text.includes(startGameIdText) || text.includes(startGameEnText)) {
     astaroth.startGameHandler(event);
@@ -25,16 +21,13 @@ async function groupChatHandler(event: NewMessageEvent) {
     astaroth.newRoundHandler(event);
   }
   if (text.includes(notEnoughPlayerIdText) || text.includes(notEnoughPlayerEnText)) {
-    globalState.clearChatPlayers(chatId);
-    debug(`Cleared chat players game on ${chatName}`);
+    astaroth.endGameHandler(event);
   }
   if (text.includes(gameKilledIdText) || text.includes(gameKilledEnText)) {
-    globalState.clearChatPlayers(chatId);
-    debug(`Cleared chat players game on ${chatName}`);
+    astaroth.endGameHandler(event);
   }
   if (text.includes(gameEndedIdText) || text.includes(gameEndedEnText)) {
-    globalState.clearChatPlayers(chatId);
-    debug(`Cleared chat players game on ${chatName}`);
+    astaroth.endGameHandler(event);
   }
 }
 

@@ -7,6 +7,7 @@ import selectCardHandler from "./selectCardHandler.js";
 import startGameHandler from "./startGameHandler.js";
 import maxPlayerHandler from "./maxPlayerHandler.js";
 import groupChatEditHandler from "./groupChatEditHandler.js";
+import endGameHandler from "./endGameHandler.js";
 
 export default {
   groupChatHandler,
@@ -14,6 +15,7 @@ export default {
   privateChatHandler,
   selectCardHandler,
   startGameHandler,
+  endGameHandler,
   keepCardHandler,
   newRoundHandler,
   maxPlayerHandler,
